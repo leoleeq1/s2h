@@ -1,0 +1,3 @@
+[submodule "extern/nw"]
+	path = extern/nw
+	url = https://github.com/leoleeq1/nw.git
