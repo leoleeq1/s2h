@@ -56,13 +56,13 @@ template<typename T> consteval size_t BitCount()
 
 template<typename T>
   requires std::is_floating_point_v<T>
-bool equals(T lhs, T rhs, T epsilon = std::numeric_limits<T>::epsilon,
+bool equals(T lhs, T rhs, T epsilon = std::numeric_limits<T>::epsilon(),
   std::size_t maxUlpDiff = 4ULL)
 {
-  assert(ulp > 0ULL && ulp <= 4ULL);
+  assert(maxUlpDiff > 0ULL && maxUlpDiff <= 4ULL);
 
   float absDiff = abs(lhs - rhs);
-  if (absDiff <= maxDiff)
+  if (absDiff <= epsilon)
   {
     return true;
   }
@@ -72,8 +72,8 @@ bool equals(T lhs, T rhs, T epsilon = std::numeric_limits<T>::epsilon,
     return false;
   }
 
-  int ulpDiff = abs(reinterpret_cast<same_size_integral<T>::type>(lhs)
-                    - reinterpret_cast<same_size_integral<T>::type>(rhs));
+  int ulpDiff = abs(*reinterpret_cast<same_size_integral<T>::type *>(&lhs)
+                    - *reinterpret_cast<same_size_integral<T>::type *>(&rhs));
   if (ulpDiff <= maxUlpDiff)
   {
     return true;

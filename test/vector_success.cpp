@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <vector>
 
+using namespace s2h;
 using TestFn = int (*)();
 
 int vector_add()
@@ -98,6 +99,22 @@ int vector_dot()
   return 1;
 }
 
+int vector_cross()
+{
+  v3f v1{1.0f, 0.0f, 0.0f};
+  v3f v2{0.0f, 1.0f, 0.0f};
+  v3f v3{0.0f, 0.0f, 1.0f};
+
+  auto v4 = cross(v1, v2);
+  if (!equals(v3, v4))
+  {
+    printf("vector_cross Failed!\n");
+    return 0;
+  }
+
+  return 1;
+}
+
 int vector_success(int, char *[])
 {
   std::vector<TestFn> tests{
@@ -106,6 +123,7 @@ int vector_success(int, char *[])
     vector_multiply,
     vector_divide,
     vector_dot,
+    vector_cross,
   };
 
   std::size_t success = 0;
