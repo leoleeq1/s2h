@@ -1,6 +1,8 @@
 #ifndef S2H_VECTOR_H_
 #define S2H_VECTOR_H_
 
+#include "math.h"
+
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -14,6 +16,8 @@
 #include <type_traits>
 #include <utility>
 
+namespace s2h
+{
 template<typename T>
 concept Arithmetic = std::is_integral_v<T> || std::is_floating_point_v<T>;
 
@@ -70,6 +74,44 @@ using v4f = vec<float, 4>;
 using v2i = vec<int32_t, 2>;
 using v3i = vec<int32_t, 3>;
 using v4i = vec<int32_t, 4>;
+
+template<typename T, std::size_t N>
+  requires std::is_integral_v<T>
+bool operator==(vec<T, N> lhs, vec<T, N> rhs)
+{
+  for (std::size_t i = 0; i < N; ++i)
+  {
+    if (lhs[i] != rhs[i])
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+template<typename T, std::size_t N>
+  requires std::is_integral_v<T>
+bool operator!=(vec<T, N> lhs, vec<T, N> rhs)
+{
+  return !operator==(lhs, rhs);
+}
+
+template<typename T, std::size_t N>
+  requires std::is_floating_point_v<T>
+bool equals(vec<T, N> lhs, vec<T, N> rhs,
+  T epsilon = std::numeric_limits<T>::epsilon, std::size_t maxUlpDiff = 4ULL)
+{
+  assert(maxUlp > 0 && ulp <= 4);
+  for (std::size_t i = 0; i < N; ++i)
+  {
+    if (!equals(lhs[i], rhs[i], epsilon, maxUlpDiff))
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 template<typename T, std::size_t N>
   requires Arithmetic<T>
@@ -188,5 +230,5 @@ vec<T, N> normalize(vec<T, N> v)
   auto l = length(v);
   return v / l;
 }
-
+} // namespace s2h
 #endif // S2H_VECTOR_H_
