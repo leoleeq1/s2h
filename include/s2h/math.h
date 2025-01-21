@@ -81,6 +81,16 @@ bool equals(T lhs, T rhs, T epsilon = std::numeric_limits<T>::epsilon(),
 
   return false;
 }
+
+auto min(auto a, auto b)
+{
+  return a > b ? b : a;
+}
+
+auto max(auto a, auto b)
+{
+  return a > b ? a : b;
+}
 } // namespace s2h
 
 #endif // S2H_MATH_H_
