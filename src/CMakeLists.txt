@@ -10,6 +10,11 @@ target_include_directories(s2h_library PUBLIC ../include)
 
 target_compile_features(s2h_library PUBLIC cxx_std_23)
 
+target_link_libraries(
+    s2h_library
+    PRIVATE nw
+)
+
 source_group(
     TREE "${PROJECT_SOURCE_DIR}/include"
     PREFIX "Header Files"
