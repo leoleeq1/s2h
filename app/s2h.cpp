@@ -1,56 +1,41 @@
-#include "nw/Event/ApplicationEvent.h"
 #include "nw/Event/event.h"
 #include "nw/Event/event_bus.h"
+#include "nw/color.h"
 #include "nw/window.h"
-#include "s2h/vector.h"
-#include <array>
+#include "nw/window_desc.h"
+#include "s2h/timer.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <cstdio>
 #include <memory>
 #include <print>
 
 int main()
 {
-  nw::Window nw;
+  nw::Window window;
   nw::EventBus eventBus{};
-  // nw.Create({.mode = nw::WindowMode::Windowed}, &eventBus);
+  s2h::Timer timer;
 
-  // while (nw.Update())
-  //{
-  //   eventBus.Dispatch();
-  // }
+  nw::WindowDesc windowDesc{
+    .size = {800, 600},
+    .mode = nw::WindowMode::Windowed,
+  };
 
-  std::array<float, 4> arr{0.0f, 1.0f, 2.f, 3.f};
-  s2h::v2f v3{4.f, 5.f};
-  s2h::v2f v4{-1.f, -3.f};
-  s2h::v4f v5{1.f, 2.f, 3.f, 4.f};
-  s2h::vec<float, 4> v2{arr};
-  s2h::vec<float, 4> v{7.f, 8.f, 9.f};
+  window.Create(windowDesc, &eventBus);
 
-  for (auto& value : (3.5f * v3).v)
+  int i = 0;
+  while (window.Update())
   {
-    std::print("{} ", value);
+    timer.Tick();
+    eventBus.Dispatch();
+    nw::Surface surface = window.GetSurface();
+    std::fill_n(
+      surface.pixels, surface.Length(), nw::Color(255, 0, (i++) % 256, 0));
+    window.Present();
+    std::println(
+      "fps: {}, elapsed: {}ms", timer.GetFPS(), timer.GetElapsedMilliSeconds());
   }
-  std::println();
-  for (auto& value : (-v3).v)
-  {
-    std::print("{} ", value);
-  }
-  std::println();
-  for (auto& value : (v5 * 1.23f).v)
-  {
-    std::print("{} ", value);
-  }
-  std::println();
 
-  for (auto& value : v2.v)
-  {
-    std::print("{} ", value);
-  }
-  std::println();
-
-  for (auto& value : v.v)
-  {
-    std::print("{} ", value);
-  }
-  std::println();
   return 0;
 }
