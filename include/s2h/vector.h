@@ -99,7 +99,7 @@ bool operator!=(vec<T, N> lhs, vec<T, N> rhs)
 template<typename T, std::size_t N>
   requires std::is_floating_point_v<T>
 bool equals(vec<T, N> lhs, vec<T, N> rhs,
-  T epsilon = std::numeric_limits<T>::epsilon(), std::size_t maxUlpDiff = 4ULL)
+  T epsilon = std::numeric_limits<T>::epsilon(), int32_t maxUlpDiff = 4)
 {
   assert(maxUlpDiff > 0 && maxUlpDiff <= 4);
   for (std::size_t i = 0; i < N; ++i)
