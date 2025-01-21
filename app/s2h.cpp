@@ -27,14 +27,15 @@ int main()
   int i = 0;
   while (window.Update())
   {
-    timer.Tick();
     eventBus.Dispatch();
+    timer.Tick([](float dt) { std::println("{}s FixedUpdate Called!", dt); },
+      [](float dt) { std::println("{}s Update Called!", dt); });
     nw::Surface surface = window.GetSurface();
     std::fill_n(
       surface.pixels, surface.Length(), nw::Color(255, 0, (i++) % 256, 0));
     window.Present();
-    std::println(
-      "fps: {}, elapsed: {}ms", timer.GetFPS(), timer.GetElapsedMilliSeconds());
+    std::println("fps: {}, dt: {}ms, tt: {}s", timer.GetFPS(),
+      timer.GetElapsedMilliSeconds(), timer.GetTotalSeconds());
   }
 
   return 0;
