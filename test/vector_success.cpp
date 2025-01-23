@@ -1,4 +1,4 @@
-#include "s2h/vector.h"
+#include "s2h/Math/vector.h"
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
