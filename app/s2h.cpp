@@ -1,3 +1,5 @@
+#include "application.h"
+
 #include "nw/Event/event.h"
 #include "nw/Event/event_bus.h"
 #include "nw/color.h"
@@ -20,6 +22,7 @@ int main()
   nw::EventBus eventBus{};
   s2h::Timer timer;
   s2h::RendererBuilder builder{};
+  s2h::Application app{};
 
   nw::WindowDesc windowDesc{
     .size = {800, 600},
@@ -35,7 +38,7 @@ int main()
   while (window.Update())
   {
     eventBus.Dispatch();
-    timer.Tick([](float dt) {}, [](float dt) {});
+    timer.Tick(&s2h::Application::FixedUpdate, &s2h::Application::Update, &app);
     renderer->Clear(nw::Color::white);
     renderer->Draw();
     window.Present();

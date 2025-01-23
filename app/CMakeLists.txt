@@ -1,5 +1,13 @@
+file(GLOB HEADER_LIST CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
+file(GLOB SOURCE_LIST CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+)
+
 add_executable(s2h
-    s2h.cpp
+    "${HEADER_LIST}"
+    "${SOURCE_LIST}"
 )
 
 target_link_libraries(

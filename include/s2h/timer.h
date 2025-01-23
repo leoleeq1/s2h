@@ -98,10 +98,9 @@ class Timer
     leftOverTicks_ = 0;
   }
 
-  template<typename TFixedUpdate, typename TUpdate>
-    requires std::is_invocable_v<TFixedUpdate, float>
-             && std::is_invocable_v<TUpdate, float>
-  void Tick(const TFixedUpdate& fixedUpdate, const TUpdate& update)
+  template<typename TResult, typename... Args>
+  void Tick(TResult (*fixedUpdate)(float, Args...),
+    TResult (*update)(float, Args...), Args... args)
   {
     LARGE_INTEGER currentTime;
 
@@ -122,10 +121,12 @@ class Timer
     while (leftOverTicks_ >= fixedStepTicks_)
     {
       leftOverTicks_ -= fixedStepTicks_;
-      fixedUpdate(static_cast<float>(TicksToSeconds(fixedStepTicks_)));
+      fixedUpdate(static_cast<float>(TicksToSeconds(fixedStepTicks_)),
+        std::forward<Args>(args)...);
     }
 
-    update(static_cast<float>(GetElapsedSeconds()));
+    update(
+      static_cast<float>(GetElapsedSeconds()), std::forward<Args>(args)...);
   }
 
  private:
