@@ -1,9 +1,8 @@
 #ifndef S2H_TIMER_H_
 #define S2H_TIMER_H_
 
-#include "math.h"
+#include "s2h/Math/math.h"
 
-#include <cmath>
 #include <cstdint>
 #include <exception>
 #include <numeric>
@@ -42,41 +41,49 @@ class Timer
     fixedStepTicks_ = ticksPerMilliSecond_ * 20ULL;
   }
 
-  uint64_t GetElapsedTicks() const noexcept { return elapsedTicks_; }
-  double GetElapsedSeconds() const noexcept
+  [[nodiscard]] uint64_t GetElapsedTicks() const noexcept
+  {
+    return elapsedTicks_;
+  }
+
+  [[nodiscard]] double GetElapsedSeconds() const noexcept
   {
     return TicksToSeconds(elapsedTicks_);
   }
-  double GetElapsedMilliSeconds() const noexcept
+
+  [[nodiscard]] double GetElapsedMilliSeconds() const noexcept
   {
     return TicksToMilliSeconds(elapsedTicks_);
   }
 
-  uint64_t GetTotalTicks() const noexcept { return totalTicks_; }
-  double GetTotalSeconds() const noexcept
+  [[nodiscard]] uint64_t GetTotalTicks() const noexcept { return totalTicks_; }
+  [[nodiscard]] double GetTotalSeconds() const noexcept
   {
     return TicksToSeconds(totalTicks_);
   }
 
-  uint32_t GetFrameCount() const noexcept { return frameCount_; }
-  uint32_t GetFPS() const noexcept { return ticksPerSecond_ / elapsedTicks_; }
+  [[nodiscard]] uint32_t GetFrameCount() const noexcept { return frameCount_; }
+  [[nodiscard]] uint32_t GetFPS() const noexcept
+  {
+    return static_cast<uint32_t>(ticksPerSecond_ / elapsedTicks_);
+  }
 
-  double TicksToMilliSeconds(uint64_t ticks) const noexcept
+  [[nodiscard]] double TicksToMilliSeconds(uint64_t ticks) const noexcept
   {
     return static_cast<double>(ticks) / ticksPerMilliSecond_;
   }
 
-  double TicksToSeconds(uint64_t ticks) const noexcept
+  [[nodiscard]] double TicksToSeconds(uint64_t ticks) const noexcept
   {
     return static_cast<double>(ticks) / ticksPerSecond_;
   }
 
-  uint64_t MilliSecondsToTicks(double seconds) const noexcept
+  [[nodiscard]] uint64_t MilliSecondsToTicks(double seconds) const noexcept
   {
     return static_cast<uint64_t>(seconds * ticksPerMilliSecond_);
   }
 
-  uint64_t SecondsToTicks(double seconds) const noexcept
+  [[nodiscard]] uint64_t SecondsToTicks(double seconds) const noexcept
   {
     return static_cast<uint64_t>(seconds * ticksPerSecond_);
   }
@@ -115,10 +122,10 @@ class Timer
     while (leftOverTicks_ >= fixedStepTicks_)
     {
       leftOverTicks_ -= fixedStepTicks_;
-      fixedUpdate(TicksToSeconds(fixedStepTicks_));
+      fixedUpdate(static_cast<float>(TicksToSeconds(fixedStepTicks_)));
     }
 
-    update(GetElapsedSeconds());
+    update(static_cast<float>(GetElapsedSeconds()));
   }
 
  private:
