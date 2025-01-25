@@ -1,5 +1,5 @@
-#ifndef S2H_VECTOR_H_
-#define S2H_VECTOR_H_
+#ifndef S2H_MATH_VECTOR_H_
+#define S2H_MATH_VECTOR_H_
 
 #include "s2h/Math/math.h"
 
@@ -280,4 +280,4 @@ constexpr vec<s2h::same_size_float_t<T>, N> normalize(vec<T, N> v)
   return vec<s2h::same_size_float_t<T>, N>(v) / l;
 }
 } // namespace s2h
-#endif // S2H_VECTOR_H_
+#endif // S2H_MATH_VECTOR_H_

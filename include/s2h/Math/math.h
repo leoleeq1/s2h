@@ -1,5 +1,5 @@
-#ifndef S2H_MATH_H_
-#define S2H_MATH_H_
+#ifndef S2H_MATH_MATH_H_
+#define S2H_MATH_MATH_H_
 
 #include <bit>
 #include <cassert>
@@ -248,4 +248,4 @@ constexpr bool equals(T lhs, T rhs,
 }
 } // namespace s2h
 
-#endif // S2H_MATH_H_
+#endif // S2H_MATH_MATH_H_
