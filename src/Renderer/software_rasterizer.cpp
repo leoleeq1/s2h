@@ -3,7 +3,7 @@
 #include "nw/surface.h"
 #include "s2h/Math/math.h"
 #include "s2h/Math/vector.h"
-#include "s2h/buffer.h"
+#include "s2h/Renderer/buffer.h"
 
 #include <algorithm>
 #include <cassert>

@@ -1,7 +1,7 @@
 #ifndef S2H_BUFFER_H_
 #define S2H_BUFFER_H_
 
-#include "s2h/vertex.h"
+#include "s2h/Renderer/vertex.h"
 
 #include <cassert>
 #include <cstdint>
