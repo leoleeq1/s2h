@@ -8,7 +8,7 @@
 
 namespace s2h
 {
-std::unique_ptr<IRenderer> RendererBuilder::Build()
+std::unique_ptr<RendererBase> RendererBuilder::Build()
 {
   switch (kind_)
   {

@@ -7,7 +7,7 @@
 
 namespace s2h
 {
-class IRenderer;
+class RendererBase;
 
 enum class RendererKind
 {
@@ -35,7 +35,7 @@ class RendererBuilder
     return *this;
   }
 
-  std::unique_ptr<IRenderer> Build();
+  std::unique_ptr<RendererBase> Build();
 
  private:
   RendererKind kind_;

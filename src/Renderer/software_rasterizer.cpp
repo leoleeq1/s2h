@@ -22,9 +22,11 @@ void SoftwareRasterizer::Draw()
   static float deg = 0;
   float rad = deg * s2h::numbers::fDeg2Rad;
   deg += 0.1f;
-  float x = 400 + s2h::cos(rad) * 1000;
-  float y = 300 + s2h::sin(rad) * 1000;
-  DrawLine(v2i{x, y}, v2i{400, 300}, nw::Color::black);
+  float width = surface_.width * 0.5f;
+  float height = surface_.height * 0.5f;
+  float x = width + s2h::cos(rad) * 1000;
+  float y = height + s2h::sin(rad) * 1000;
+  DrawLine(v2i{x, y}, v2i{width, height}, nw::Color::black);
 }
 
 void SoftwareRasterizer::DrawIndexed(

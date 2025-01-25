@@ -7,10 +7,10 @@
 
 namespace s2h
 {
-class SoftwareRasterizer final : public IRenderer
+class SoftwareRasterizer final : public RendererBase
 {
  public:
-  SoftwareRasterizer(nw::Surface surface) : surface_{surface} {}
+  SoftwareRasterizer(const nw::Surface& surface) : RendererBase{surface} {}
   virtual ~SoftwareRasterizer() = default;
   void Clear(nw::Color color) override;
   void Draw() override;
@@ -22,8 +22,6 @@ class SoftwareRasterizer final : public IRenderer
   void DrawLine(s2h::v2i v0, s2h::v2i v1, nw::Color color);
   bool CohenSutherlandClip(
     s2h::v2i& v0, s2h::v2i& v1, s2h::v2i min, s2h::v2i max);
-
-  nw::Surface surface_;
 };
 
 inline void SoftwareRasterizer::SetPixel(s2h::v2i v, nw::Color color)

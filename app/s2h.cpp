@@ -1,5 +1,6 @@
 #include "application.h"
 
+#include "nw/Event/ApplicationEvent.h"
 #include "nw/Event/event.h"
 #include "nw/Event/event_bus.h"
 #include "nw/color.h"
@@ -30,10 +31,16 @@ int main()
   };
 
   window.Create(windowDesc, &eventBus);
-  std::unique_ptr<s2h::IRenderer> renderer =
+  std::unique_ptr<s2h::RendererBase> renderer =
     builder.Set(s2h::RendererKind::SoftwareRasterizer)
       .Set(window.GetSurface())
       .Build();
+
+  eventBus.Subscribe(std::make_unique<nw::EventHandler<nw::WindowResizeEvent>>(
+    [&window, &renderer](nw::WindowResizeEvent& e) {
+      renderer->OnWindowSizeChanged(window.CreateSurface(e.GetSize()));
+      return true;
+    }));
 
   while (window.Update())
   {
