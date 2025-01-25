@@ -20,7 +20,7 @@ class VertexBuffer
  public:
   constexpr Vertex operator[](std::size_t i) const noexcept
   {
-    assert(i >= 0 && i < vertices.size());
+    assert(i < vertices.size());
     return vertices[i];
   }
 
