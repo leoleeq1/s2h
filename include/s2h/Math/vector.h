@@ -33,6 +33,20 @@ struct vec
     }
   }
 
+  template<s2h::Arithmetic U, std::size_t M, typename... Args>
+    requires(sizeof...(Args) > 0)
+  explicit constexpr vec(const vec<U, M>& rhs, Args... args)
+  {
+    static_assert(M + sizeof...(Args) == N, "Invalid number of arguments!");
+    for (std::size_t i = 0; i < M; ++i)
+    {
+      v[i] = static_cast<T>(rhs.v[i]);
+    }
+
+    std::size_t index = 0;
+    ((v[M + index++] = static_cast<T>(args)), ...);
+  }
+
   template<typename... E>
   explicit constexpr vec(E&&...e)
     requires(
@@ -41,7 +55,38 @@ struct vec
   {
   }
 
-  static consteval vec basis(std::size_t i)
+  template<Arithmetic U, std::size_t M> constexpr operator vec<U, M>()
+  {
+    vec<U, M> vec{};
+    constexpr std::size_t n = std::min(N, M);
+    for (std::size_t i = 0; i < n; ++i)
+    {
+      vec.v[i] = static_cast<U>(v[i]);
+    }
+    return vec;
+  }
+
+  static consteval vec Zero()
+  {
+    vec<T, N> temp;
+    for (std::size_t i = 0; i < N; ++i)
+    {
+      temp.v[i] = static_cast<T>(0);
+    }
+    return temp;
+  }
+
+  static consteval vec One()
+  {
+    vec<T, N> temp;
+    for (std::size_t i = 0; i < N; ++i)
+    {
+      temp.v[i] = static_cast<T>(1);
+    }
+    return temp;
+  }
+
+  static consteval vec Basis(std::size_t i)
   {
     vec<T, N> temp;
     for (std::size_t j = 0; j < N; ++j)
@@ -51,9 +96,15 @@ struct vec
     return temp;
   }
 
-  T& operator[](size_t i)
+  T operator[](std::size_t i) const
   {
-    assert(i >= 0 && i < N);
+    assert(i < N);
+    return v[i];
+  }
+
+  T& operator[](std::size_t i)
+  {
+    assert(i < N);
     return v[i];
   }
 
@@ -76,6 +127,20 @@ struct alignas(alignof(T) * 4) vec<T, 4>
     }
   }
 
+  template<s2h::Arithmetic U, std::size_t M, typename... Args>
+    requires(sizeof...(Args) > 0)
+  explicit constexpr vec(const vec<U, M>& rhs, Args... args)
+  {
+    static_assert(M + sizeof...(Args) == 4, "Invalid number of arguments!");
+    for (std::size_t i = 0; i < M; ++i)
+    {
+      v[i] = static_cast<T>(rhs.v[i]);
+    }
+
+    std::size_t index = 0;
+    ((v[M + index++] = static_cast<T>(args)), ...);
+  }
+
   template<typename... E>
   explicit constexpr vec(E&&...e)
     requires(
@@ -84,9 +149,56 @@ struct alignas(alignof(T) * 4) vec<T, 4>
   {
   }
 
-  T& operator[](size_t i)
+  template<Arithmetic U, std::size_t M> constexpr operator vec<U, M>()
   {
-    assert(i >= 0 && i < 4);
+    vec<U, M> vec{};
+    constexpr std::size_t n = s2h::min(4ULL, M);
+    for (std::size_t i = 0; i < n; ++i)
+    {
+      vec.v[i] = static_cast<U>(v[i]);
+    }
+    return vec;
+  }
+
+  static consteval vec Zero()
+  {
+    vec<T, 4> temp;
+    for (std::size_t i = 0; i < 4; ++i)
+    {
+      temp.v[i] = static_cast<T>(0);
+    }
+    return temp;
+  }
+
+  static consteval vec One()
+  {
+    vec<T, 4> temp;
+    for (std::size_t i = 0; i < 4; ++i)
+    {
+      temp.v[i] = static_cast<T>(1);
+    }
+    return temp;
+  }
+
+  static consteval vec Basis(std::size_t i)
+  {
+    vec<T, 4> temp;
+    for (std::size_t j = 0; j < 4; ++j)
+    {
+      temp.v[j] = (i == j) ? static_cast<T>(1) : static_cast<T>(0);
+    }
+    return temp;
+  }
+
+  T operator[](std::size_t i) const
+  {
+    assert(i < 4);
+    return v[i];
+  }
+
+  T& operator[](std::size_t i)
+  {
+    assert(i < 4);
     return v[i];
   }
 
@@ -196,6 +308,17 @@ constexpr vec<T, N> operator-(vec<T, N> v)
 
 template<typename T, std::size_t N>
   requires Arithmetic<T>
+constexpr vec<T, N> operator*(vec<T, N> lhs, vec<T, N> rhs)
+{
+  for (std::size_t i = 0; i < N; ++i)
+  {
+    lhs[i] *= rhs[i];
+  }
+  return lhs;
+}
+
+template<typename T, std::size_t N>
+  requires Arithmetic<T>
 constexpr vec<T, N> operator*(Arithmetic auto lhs, vec<T, N> rhs)
 {
   for (std::size_t i = 0; i < N; ++i)
@@ -218,6 +341,22 @@ constexpr vec<T, N> operator*(vec<T, N> lhs, Arithmetic auto rhs)
 
 template<typename T, std::size_t N>
   requires Arithmetic<T>
+constexpr vec<T, N> operator/(vec<T, N> lhs, vec<T, N> rhs)
+{
+  for (std::size_t i = 0; i < N; ++i)
+  {
+    assert(rhs[i] > std::numeric_limits<T>::epsilon()
+           || rhs[i] < -std::numeric_limits<T>::epsilon());
+  }
+  for (std::size_t i = 0; i < N; ++i)
+  {
+    lhs[i] /= rhs[i];
+  }
+  return lhs;
+}
+
+template<typename T, std::size_t N>
+  requires Arithmetic<T>
 constexpr vec<T, N> operator/(vec<T, N> lhs, Arithmetic auto rhs)
 {
   assert(rhs > std::numeric_limits<decltype(rhs)>::epsilon()
@@ -227,6 +366,24 @@ constexpr vec<T, N> operator/(vec<T, N> lhs, Arithmetic auto rhs)
     lhs[i] /= rhs;
   }
   return lhs;
+}
+
+template<typename T, std::size_t N>
+  requires Arithmetic<T>
+constexpr vec<T, N> operator/(Arithmetic auto lhs, vec<T, N> rhs)
+{
+  for (std::size_t i = 0; i < N; ++i)
+  {
+    assert(rhs[i] > std::numeric_limits<T>::epsilon()
+           || rhs[i] < -std::numeric_limits<T>::epsilon());
+  }
+
+  vec<T, N> v{};
+  for (std::size_t i = 0; i < N; ++i)
+  {
+    v[i] = lhs / rhs[i];
+  }
+  return v;
 }
 
 template<typename T, std::size_t N>

@@ -42,6 +42,15 @@ struct mat
     }
   }
 
+  constexpr explicit mat(std::initializer_list<s2h::vec<T, N>> list)
+  {
+    assert(list.size() == N);
+    for (std::size_t r = 0; r < N; ++r)
+    {
+      m[r] = list.begin()[r];
+    }
+  }
+
   template<Arithmetic U> constexpr explicit mat(std::initializer_list<U> list)
   {
     assert(list.size() == (N * N));
@@ -75,14 +84,14 @@ struct mat
 template<typename T, std::size_t Row, std::size_t Col> struct mat_nm
 {
   constexpr mat_nm() : m{} {}
-  constexpr mat_nm(const mat& m) : m{m.m} {}
+  constexpr mat_nm(const mat_nm& m) : m{m.m} {}
   constexpr explicit mat_nm(std::span<T, Row * Col> s)
   {
     for (std::size_t r = 0; r < Row; ++r)
     {
       for (std::size_t c = 0; c < Col; ++c)
       {
-        m[r][c] = s[r * N + c];
+        m[r][c] = s[r * Col + c];
       }
     }
   }
@@ -106,7 +115,7 @@ template<typename T, std::size_t Row, std::size_t Col> struct mat_nm
     {
       for (std::size_t c = 0; c < Col; ++c)
       {
-        m[r][c] = static_cast<T>(list.begin()[r * N + c]);
+        m[r][c] = static_cast<T>(list.begin()[r * Col + c]);
       }
     }
   }
@@ -115,6 +124,10 @@ template<typename T, std::size_t Row, std::size_t Col> struct mat_nm
 
   std::array<vec<T, Col>, Row> m;
 };
+
+using mat2 = mat<float, 2>;
+using mat3 = mat<float, 3>;
+using mat4 = mat<float, 4>;
 
 template<typename T, std::size_t N>
 constexpr s2h::mat<T, N> Transpose(s2h::mat<T, N> m)
@@ -159,25 +172,47 @@ template<typename T, std::size_t N>
 constexpr s2h::mat<T, N> operator*(s2h::mat<T, N> lhs, s2h::mat<T, N> rhs)
 {
   s2h::mat<T, N> m{};
+  rhs = s2h::Transpose(rhs);
   for (std::size_t r = 0; r < N; ++r)
   {
     for (std::size_t q = 0; q < N; ++q)
     {
-      m[r] = lhs[r] * rhs[q] + m[r];
+      m[r][q] = s2h::dot(lhs[r] * rhs[q], s2h::vec<T, N>::One());
     }
   }
-  return lhs;
+  return m;
 }
 
 template<typename T, std::size_t N>
 constexpr s2h::vec<T, N> operator*(s2h::vec<T, N> lhs, s2h::mat<T, N> rhs)
 {
   s2h::vec<T, N> v{};
+  rhs = s2h::Transpose(rhs);
   for (std::size_t r = 0; r < N; ++r)
   {
-    v = lhs * rhs[r] + v;
+    v[r] = s2h::dot(lhs * rhs[r], s2h::vec<T, N>::One());
   }
   return v;
+}
+
+template<typename T, std::size_t N>
+constexpr s2h::mat<T, N> operator/(s2h::mat<T, N> lhs, Arithmetic auto rhs)
+{
+  for (std::size_t r = 0; r < N; ++r)
+  {
+    lhs[r] /= rhs;
+  }
+  return lhs;
+}
+
+template<typename T, std::size_t N>
+constexpr s2h::mat<T, N> operator/(Arithmetic auto lhs, s2h::mat<T, N> rhs)
+{
+  for (std::size_t r = 0; r < N; ++r)
+  {
+    rhs[r] = lhs / rhs[r];
+  }
+  return rhs;
 }
 } // namespace s2h
 
