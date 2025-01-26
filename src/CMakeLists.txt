@@ -1,11 +1,8 @@
-file(GLOB HEADER_LIST CONFIGURE_DEPENDS
+file(GLOB_RECURSE HEADER_LIST CONFIGURE_DEPENDS
     "${s2h_SOURCE_DIR}/include/s2h/*.h"
-    "${s2h_SOURCE_DIR}/include/s2h/Math/*.h"
-    "${s2h_SOURCE_DIR}/include/s2h/Renderer/*.h"
 )
-file(GLOB SOURCE_LIST CONFIGURE_DEPENDS
+file(GLOB_RECURSE SOURCE_LIST CONFIGURE_DEPENDS
     "${s2h_SOURCE_DIR}/src/*.cpp"
-    "${s2h_SOURCE_DIR}/src/Renderer/*.cpp"
 )
 
 add_library(s2h_library
