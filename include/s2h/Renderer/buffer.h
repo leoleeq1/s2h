@@ -1,43 +1,34 @@
 #ifndef S2H_BUFFER_H_
 #define S2H_BUFFER_H_
 
+#include "s2h/Math/matrix.h"
 #include "s2h/Renderer/vertex.h"
 
 #include <cassert>
 #include <cstdint>
+#include <span>
 #include <vector>
 
 namespace s2h
 {
+using VertexBuffer = std::vector<s2h::Vertex>;
+using IndexBuffer = std::vector<std::size_t>;
+
 class ConstantBuffer
 {
  public:
- private:
-};
+  s2h::mat4 GetModelMatrix() const noexcept;
+  s2h::mat4 GetViewMatrix() const noexcept;
+  s2h::mat4 GetProjectionMatrix() const noexcept;
 
-class VertexBuffer
-{
- public:
-  constexpr Vertex operator[](std::size_t i) const noexcept
-  {
-    assert(i < vertices.size());
-    return vertices[i];
-  }
+  void SetModelMatrix(s2h::mat4 matrix) noexcept;
+  void SetViewMatrix(s2h::mat4 matrix) noexcept;
+  void SetProjectionMatrix(s2h::mat4 matrix) noexcept;
 
  private:
-  std::vector<Vertex> vertices;
-};
-
-class IndexBuffer
-{
- public:
-  constexpr const std::vector<std::size_t>& Get() const noexcept
-  {
-    return indices;
-  }
-
- private:
-  std::vector<std::size_t> indices;
+  s2h::mat4 modelMatrix_;
+  s2h::mat4 viewMatrix_;
+  s2h::mat4 projectionMatrix_;
 };
 } // namespace s2h
 

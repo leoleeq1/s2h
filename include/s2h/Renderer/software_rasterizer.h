@@ -1,36 +1,41 @@
 #ifndef S2H_SOFTWARE_RASTERIZER_H_
 #define S2H_SOFTWARE_RASTERIZER_H_
 
-#include "nw/surface.h"
+#include "nw/color.h"
 #include "s2h/Math/vector.h"
+#include "s2h/Renderer/buffer.h"
 #include "s2h/Renderer/renderer.h"
+#include "s2h/Resource/texture.h"
 
 namespace s2h
 {
 class SoftwareRasterizer final : public RendererBase
 {
  public:
-  SoftwareRasterizer(const nw::Surface& surface) : RendererBase{surface} {}
+  SoftwareRasterizer() = default;
   virtual ~SoftwareRasterizer() = default;
-  void Clear(nw::Color color) override;
-  void Draw() override;
-  void DrawIndexed(
+  void DrawIndexed(s2h::RenderTarget target, const s2h::ConstantBuffer& cb,
     const s2h::VertexBuffer& vb, const s2h::IndexBuffer& ib) override;
 
  private:
-  inline void SetPixel(s2h::v2i v, nw::Color color);
-  void DrawLine(s2h::v2i v0, s2h::v2i v1, nw::Color color);
+  inline void SetPixel(s2h::RenderTarget target, s2h::v2i v, nw::Color color);
+  void DrawLine(
+    s2h::RenderTarget target, s2h::v2f v0, s2h::v2f v1, nw::Color color);
   bool CohenSutherlandClip(
-    s2h::v2i& v0, s2h::v2i& v1, s2h::v2i min, s2h::v2i max);
+    s2h::v2f& v0, s2h::v2f& v1, s2h::v2f min, s2h::v2f max);
 };
 
-inline void SoftwareRasterizer::SetPixel(s2h::v2i v, nw::Color color)
+inline void SoftwareRasterizer::SetPixel(
+  s2h::RenderTarget target, s2h::v2i v, nw::Color color)
 {
-  if (v[0] < 0 || v[0] >= surface_.width || v[1] < 0 || v[1] >= surface_.height)
+  if (v[0] < 0 || v[0] >= renderTextures_[target.handle.id].GetWidth()
+      || v[1] < 0 || v[1] >= renderTextures_[target.handle.id].GetHeight())
   {
     return;
   }
-  surface_.pixels[v[1] * surface_.width + v[0]] = color;
+  nw::Color *pixels = reinterpret_cast<nw::Color *>(
+    renderTextures_[target.handle.id].GetPixels());
+  pixels[v[1] * renderTextures_[target.handle.id].GetWidth() + v[0]] = color;
 }
 } // namespace s2h
 

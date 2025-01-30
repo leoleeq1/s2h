@@ -13,7 +13,7 @@ std::unique_ptr<RendererBase> RendererBuilder::Build()
   switch (kind_)
   {
     case RendererKind::SoftwareRasterizer:
-      return std::make_unique<SoftwareRasterizer>(surface_);
+      return std::make_unique<SoftwareRasterizer>();
     case RendererKind::SoftwareRaytracer:
       [[fallthrough]];
     case RendererKind::HardwareRasterizer:

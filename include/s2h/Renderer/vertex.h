@@ -7,7 +7,7 @@ namespace s2h
 {
 struct Vertex
 {
-  v3i position;
+  v3f position;
 };
 } // namespace s2h
 

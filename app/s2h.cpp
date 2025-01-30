@@ -9,7 +9,11 @@
 #include "s2h/Renderer/renderer.h"
 #include "s2h/Renderer/renderer_builder.h"
 #include "s2h/Renderer/software_rasterizer.h"
+#include "s2h/Renderer/vertex.h"
 #include "s2h/timer.h"
+
+#include "s2h/Engine/ecs.h"
+#include "s2h/Engine/entity.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -21,9 +25,6 @@ int main()
 {
   nw::Window window;
   nw::EventBus eventBus{};
-  s2h::Timer timer;
-  s2h::RendererBuilder builder{};
-  s2h::Application app{};
 
   nw::WindowDesc windowDesc{
     .size = {800, 600},
@@ -31,23 +32,33 @@ int main()
   };
 
   window.Create(windowDesc, &eventBus);
-  std::unique_ptr<s2h::RendererBase> renderer =
-    builder.Set(s2h::RendererKind::SoftwareRasterizer)
-      .Set(window.GetSurface())
-      .Build();
+
+  s2h::RendererBuilder builder{};
+  builder.Set(s2h::RendererKind::SoftwareRasterizer);
+
+  s2h::Application app{window.GetSurface(), builder.Build()};
+  app.Initialize();
 
   eventBus.Subscribe(std::make_unique<nw::EventHandler<nw::WindowResizeEvent>>(
-    [&window, &renderer](nw::WindowResizeEvent& e) {
-      renderer->OnWindowSizeChanged(window.CreateSurface(e.GetSize()));
+    [&window, &app](nw::WindowResizeEvent& e) {
+      nw::Surface surface = window.CreateSurface(e.GetSize());
+      app.OnWindowSizeChanged(surface);
       return true;
     }));
+
+  // s2h::ECS ecs;
+  // s2h::Entity e = ecs.Entity();
+  // ecs.AddComponent(e, s2h::ecs::ComponentId{1});
+  // ecs.AddComponent(e, s2h::ecs::ComponentId{2});
+  // ecs.AddComponent(e, s2h::ecs::ComponentId{3});
+
+  s2h::Timer timer;
 
   while (window.Update())
   {
     eventBus.Dispatch();
-    timer.Tick(&s2h::Application::FixedUpdate, &s2h::Application::Update, &app);
-    renderer->Clear(nw::Color::white);
-    renderer->Draw();
+    timer.Tick(
+      &s2h::Application::FixedUpdateLoop, &s2h::Application::UpdateLoop, &app);
     window.Present();
   }
 

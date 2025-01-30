@@ -8,25 +8,10 @@ namespace s2h
 {
 template<std::size_t tag> struct Handle
 {
-  int32_t id;
+  std::size_t id;
 };
 
 using RenderTextureHandle = Handle<0>;
-
-enum class TextureFormat
-{
-  None = 0,
-  A8R8G8B8,
-  D24S8,
-};
-
-struct TextureDesc
-{
-  TextureFormat format = TextureFormat::None;
-  int32_t width = 0;
-  int32_t height = 0;
-};
-
 struct RenderTarget
 {
   RenderTextureHandle handle;

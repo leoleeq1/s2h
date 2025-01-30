@@ -1,4 +1,4 @@
-#include "s2h/Renderer/texture.h"
+#include "s2h/Resource/texture.h"
 #include "s2h/Renderer/misc.h"
 
 #include <cstdint>

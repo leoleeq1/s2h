@@ -1,5 +1,7 @@
-#ifndef S2H_TEXTURE_H_
-#define S2H_TEXTURE_H_
+#ifndef S2H_RESOURCE_TEXTURE_H_
+#define S2H_RESOURCE_TEXTURE_H_
+
+#include "s2h/Resource/resource.h"
 
 #include <cstdint>
 #include <memory>
@@ -20,7 +22,7 @@ struct TextureDesc
   int32_t height = 0;
 };
 
-class Texture
+class Texture : public IResource
 {
  public:
   explicit Texture(TextureDesc desc);
@@ -67,4 +69,4 @@ constexpr std::size_t Texture::CalculateBufferSize(TextureDesc desc) noexcept
 }
 } // namespace s2h
 
-#endif // S2H_TEXTURE_H_
+#endif // S2H_RESOURCE_TEXTURE_H_
