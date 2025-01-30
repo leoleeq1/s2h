@@ -1,5 +1,5 @@
 #include "s2h/Renderer/texture.h"
-#include "s2h/Renderer/descriptor.h"
+#include "s2h/Renderer/misc.h"
 
 #include <cstdint>
 #include <memory>
@@ -33,23 +33,4 @@ Texture& Texture::operator=(Texture&& texture) noexcept
   desc_ = texture.desc_;
   return *this;
 }
-
-constexpr std::size_t Texture::CalculateBufferSize(TextureDesc desc) noexcept
-{
-  int32_t bitCount = 0;
-  switch (desc.format)
-  {
-    case TextureFormat::A8R8G8B8:
-      bitCount = 32;
-      break;
-    case TextureFormat::D24S8:
-      bitCount = 24;
-      break;
-    default:
-      std::unreachable();
-  }
-  return static_cast<std::size_t>(
-    (((desc.width * bitCount + 15) >> 4U) << 1U) * desc.height);
-}
-
 } // namespace s2h
