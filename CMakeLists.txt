@@ -38,3 +38,7 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/extern/nw/CMakeLists.txt")
 endif()
 
 add_subdirectory(extern/nw)
+
+add_custom_target(RUN_BUILD ALL
+    COMMAND $<TARGET_FILE:s2h>
+    DEPENDS s2h s2h_library MathTests)

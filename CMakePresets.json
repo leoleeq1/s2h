@@ -50,7 +50,9 @@
         {
             "name": "flags-gcc",
             "hidden": true,
-            "inherits": ["flags-common"],
+            "inherits": [
+                "flags-common"
+            ],
             "cacheVariables": {
                 "CMAKE_CXX_FLAGS": "-Wtrampolines -Wbidi-chars=any -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion -fexceptions"
             }
@@ -65,27 +67,42 @@
         },
         {
             "name": "win64-debug",
-            "inherits": ["debug", "cpp-std", "clang-tidy", "flags-msvc"],
+            "inherits": [
+                "debug",
+                "cpp-std",
+                "clang-tidy",
+                "flags-msvc"
+            ],
+            "cacheVariables": {
+                "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/build/bin/${presetName}",
+                "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/build/bin/${presetName}",
+                "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/build/bin/${presetName}"
+            },
             "architecture": "x64"
         },
         {
             "name": "win64-release",
-            "inherits": ["release", "cpp-std"],
+            "inherits": [
+                "release",
+                "cpp-std"
+            ],
             "architecture": "x64"
         }
     ],
     "buildPresets": [
         {
-            "name": "lib-debug",
-            "displayName": "Lib Debug Build",
-            "configurePreset": "debug",
-            "configuration": "Debug"
+            "name": "win64-debug",
+            "displayName": "Windows x64 Debug Build",
+            "configurePreset": "win64-debug",
+            "configuration": "Debug",
+            "cleanFirst": true
         },
         {
-            "name": "lib-release",
-            "displayName": "Lib Release Build",
-            "configurePreset": "release",
-            "configuration": "Release"
+            "name": "win64-release",
+            "displayName": "Windows x64 Release Build",
+            "configurePreset": "win64-release",
+            "configuration": "Release",
+            "cleanFirst": true
         }
     ]
 }
