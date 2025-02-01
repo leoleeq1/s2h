@@ -1,6 +1,8 @@
-#include "s2h/Engine/Component/camera.h"
-#include "s2h/Engine/Component/transform.h"
-#include "s2h/Engine/gameobject.h"
+#include "s2h/Engine/OOP/Component/camera.h"
+#include "s2h/Engine/OOP/Component/transform.h"
+#include "s2h/Engine/OOP/gameobject.h"
+#include "s2h/Math/matrix.h"
+#include "s2h/Math/vector.h"
 #include "s2h/Resource/texture.h"
 
 #include <cstdint>
@@ -14,7 +16,15 @@ bool Camera::FrustumCulling() const noexcept
 
 mat4 Camera::GetViewMatrix() const noexcept
 {
-  return gameObject_->GetTransform().GetViewMatrix();
+  Transform& tr = gameObject_->GetTransform();
+  mat4 t = mat4{
+    v4f::Basis(0),
+    v4f::Basis(1),
+    v4f::Basis(2),
+    v4f{-tr.Position, 1.0f},
+  };
+  mat4 r = s2h::Transpose(tr.GetRotationMatrix(tr.Rotation));
+  return t * r;
 }
 
 mat4 Camera::GetProjectionMatrix(const Texture& rt) const noexcept

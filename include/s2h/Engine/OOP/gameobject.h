@@ -1,5 +1,5 @@
-#ifndef S2H_ENGINE_GAMEOBJECT_H_
-#define S2H_ENGINE_GAMEOBJECT_H_
+#ifndef S2H_ENGINE_OOP_GAMEOBJECT_H_
+#define S2H_ENGINE_OOP_GAMEOBJECT_H_
 
 #include <concepts>
 #include <cstddef>
@@ -103,4 +103,4 @@ template<ComponentType T> T *GameObject::AddComponent()
 }
 } // namespace s2h
 
-#endif // S2H_ENGINE_GAMEOBJECT_H_
+#endif // S2H_ENGINE_OOP_GAMEOBJECT_H_

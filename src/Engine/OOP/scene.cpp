@@ -1,5 +1,5 @@
-#include "s2h/Engine/scene.h"
-#include "s2h/Engine/gameobject.h"
+#include "s2h/Engine/OOP/scene.h"
+#include "s2h/Engine/OOP/gameobject.h"
 
 #include <cstddef>
 #include <memory>

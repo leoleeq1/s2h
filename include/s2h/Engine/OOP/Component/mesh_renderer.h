@@ -1,7 +1,7 @@
-#ifndef S2H_ENGINE_MESH_RENDERER_H_
-#define S2H_ENGINE_MESH_RENDERER_H_
+#ifndef S2H_ENGINE_OOP_COMPONENT_MESH_RENDERER_H_
+#define S2H_ENGINE_OOP_COMPONENT_MESH_RENDERER_H_
 
-#include "s2h/Engine/Component/component.h"
+#include "s2h/Engine/OOP/Component/component.h"
 
 namespace s2h
 {
@@ -18,4 +18,4 @@ class MeshRenderer : public Component
 };
 } // namespace s2h
 
-#endif // S2H_ENGINE_MESH_RENDERER_H_
+#endif // S2H_ENGINE_OOP_COMPONENT_MESH_RENDERER_H_

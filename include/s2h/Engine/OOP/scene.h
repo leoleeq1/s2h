@@ -1,5 +1,5 @@
-#ifndef S2H_ENGINE_SCENE_H_
-#define S2H_ENGINE_SCENE_H_
+#ifndef S2H_ENGINE_OOP_SCENE_H_
+#define S2H_ENGINE_OOP_SCENE_H_
 
 #include <memory>
 #include <span>
@@ -41,4 +41,4 @@ template<typename T> std::vector<T *> Scene::FindComponents()
 }
 } // namespace s2h
 
-#endif // S2H_ENGINE_SCENE_H_
+#endif // S2H_ENGINE_OOP_SCENE_H_

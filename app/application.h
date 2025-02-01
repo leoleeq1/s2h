@@ -2,8 +2,9 @@
 #define S2H_APPLICATION_H_
 
 #include "nw/surface.h"
+#include "s2h/Engine/ECS/ecs.h"
+#include "s2h/Engine/OOP/scene.h"
 #include "s2h/Engine/resource_manager.h"
-#include "s2h/Engine/scene.h"
 
 #include <memory>
 
@@ -33,10 +34,11 @@ class Application
   void LateUpdate(float dt);
   void Render();
 
+  s2h::ecs::ECS ecs_;
+  s2h::ResourceManager resourceManager_;
+  s2h::Scene scene_;
   nw::Surface surface_;
   std::unique_ptr<s2h::RendererBase> renderer_;
-  s2h::Scene scene_;
-  s2h::ResourceManager resourceManager_;
 };
 } // namespace s2h
 

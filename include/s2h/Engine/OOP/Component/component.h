@@ -1,7 +1,7 @@
-#ifndef S2H_ENGINE_COMPONENT_H_
-#define S2H_ENGINE_COMPONENT_H_
+#ifndef S2H_ENGINE_OOP_COMPONENT_COMPONENT_H_
+#define S2H_ENGINE_OOP_COMPONENT_COMPONENT_H_
 
-#include "s2h/Engine/gameobject.h"
+#include "s2h/Engine/OOP/gameobject.h"
 
 #include <typeindex>
 #include <typeinfo>
@@ -57,4 +57,4 @@ std::vector<T *> Component::GetComponentsInChildren(bool includeSelf)
 }
 } // namespace s2h
 
-#endif // S2H_ENGINE_COMPONENT_H_
+#endif // S2H_ENGINE_OOP_COMPONENT_COMPONENT_H_

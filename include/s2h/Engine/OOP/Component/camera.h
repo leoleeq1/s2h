@@ -1,7 +1,7 @@
-#ifndef S2H_ENGINE_CAMERA_H_
-#define S2H_ENGINE_CAMERA_H_
+#ifndef S2H_ENGINE_OOP_COMPONENT_CAMERA_H_
+#define S2H_ENGINE_OOP_COMPONENT_CAMERA_H_
 
-#include "s2h/Engine/Component/component.h"
+#include "s2h/Engine/OOP/Component/component.h"
 #include "s2h/Math/matrix.h"
 #include "s2h/Renderer/misc.h"
 

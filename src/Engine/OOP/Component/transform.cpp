@@ -1,4 +1,4 @@
-#include "s2h/Engine/Component/transform.h"
+#include "s2h/Engine/OOP/Component/transform.h"
 #include "s2h/Math/math.h"
 #include "s2h/Math/matrix.h"
 #include "s2h/Math/vector.h"
@@ -42,39 +42,17 @@ void Transform::SetPositionRotation(
 
 mat4 Transform::GetLocalTranslateMatrix() const noexcept
 {
-  return mat4{
-    v4f::Basis(0),
-    v4f::Basis(1),
-    v4f::Basis(2),
-    v4f{localPosition_[0], localPosition_[1], localPosition_[2], 1.0f},
-  };
+  return GetTranslateMatrix(localPosition_);
 }
 
 mat4 Transform::GetLocalRotationMatrix() const noexcept
 {
-  float cp = s2h::cos(s2h::numbers::fDeg2Rad * localRotation_[0]);
-  float sp = s2h::sin(s2h::numbers::fDeg2Rad * localRotation_[0]);
-  float cy = s2h::cos(s2h::numbers::fDeg2Rad * localRotation_[1]);
-  float sy = s2h::sin(s2h::numbers::fDeg2Rad * localRotation_[1]);
-  float cr = s2h::cos(s2h::numbers::fDeg2Rad * localRotation_[2]);
-  float sr = s2h::sin(s2h::numbers::fDeg2Rad * localRotation_[2]);
-
-  return mat4{
-    v4f{cr * cy + sr * sp * sy,  -sr * cy + cr * sp * sy, cp * sy, 0.0f},
-    v4f{sr * cp,                 cr * cp,                 -sp,     0.0f},
-    v4f{-sy * cr + sr * sp * cy, sr * sy + cr * sp * cy,  cp * cy, 0.0f},
-    v4f::Basis(3),
-  };
+  return GetRotationMatrix(localRotation_);
 }
 
 mat4 Transform::GetLocalScaleMatrix() const noexcept
 {
-  return mat4{
-    v4f::Basis(0) * localScale_[0],
-    v4f::Basis(1) * localScale_[1],
-    v4f::Basis(2) * localScale_[2],
-    v4f::Basis(3),
-  };
+  return GetScaleMatrix(localScale_);
 }
 
 mat4 Transform::GetModelMatrix() const noexcept
@@ -108,27 +86,6 @@ mat4 Transform::GetInvWorldMatrix() const noexcept
   return parent_ == nullptr
            ? GetInvModelMatrix()
            : GetInvModelMatrix() * parent_->GetInvWorldMatrix();
-}
-
-mat4 Transform::GetViewMatrix() const noexcept
-{
-  mat4 t = mat4{
-    v4f::Basis(0),
-    v4f::Basis(1),
-    v4f::Basis(2),
-    v4f{-position_, 1.0f},
-  };
-
-  mat4 r = s2h::Transpose(GetLocalRotationMatrix());
-  //   mat4 r = s2h::Transpose(mat4{
-  //   v4f{right_,   0.0f},
-  //   v4f{up_,      0.0f},
-  //   v4f{forward_, 0.0f},
-  //   v4f::Basis(3)
-  // });
-
-  mat4 vm = t * r;
-  return parent_ == nullptr ? vm : vm * parent_->GetViewMatrix();
 }
 
 Transform *Transform::GetParent() noexcept

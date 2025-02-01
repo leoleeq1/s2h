@@ -1,5 +1,5 @@
-#include "s2h/Engine/Component/component.h"
-#include "s2h/Engine/gameobject.h"
+#include "s2h/Engine/OOP/Component/component.h"
+#include "s2h/Engine/OOP/gameobject.h"
 
 namespace s2h
 {

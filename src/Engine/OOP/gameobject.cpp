@@ -1,5 +1,5 @@
-#include "s2h/Engine/gameobject.h"
-#include "s2h/Engine/Component/transform.h"
+#include "s2h/Engine/OOP/gameobject.h"
+#include "s2h/Engine/OOP/Component/transform.h"
 
 #include <algorithm>
 #include <cstddef>

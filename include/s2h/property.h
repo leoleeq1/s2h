@@ -31,6 +31,16 @@ template<typename T> class Property
     setter_ = setter;
   }
 
+  Property& operator=(T value)
+  {
+    value_ = value;
+    if (setter_)
+    {
+      setter_(value);
+    }
+    return *this;
+  }
+
   Property& operator+=(T value)
   {
     value_ += value;
@@ -81,16 +91,6 @@ template<typename T> class Property
     return *this;
   }
 
-  Property& operator=(T value)
-  {
-    value_ = value;
-    if (setter_)
-    {
-      setter_(value);
-    }
-    return *this;
-  }
-
   operator T() const
   {
     if (getter_)
@@ -99,6 +99,13 @@ template<typename T> class Property
     }
     return value_;
   }
+
+  T operator+(T value) { return value_ + value; }
+  T operator-() { return -value_; }
+  T operator-(T value) { return value_ - value; }
+  T operator*(T value) { return value_ * value; }
+  T operator/(T value) { return value_ / value; }
+  T operator%(T value) { return value_ % value; }
 
  private:
   T& value_{};
