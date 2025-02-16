@@ -6,9 +6,10 @@
 
 namespace s2h::ecs
 {
+using EntityId = int32_t;
 struct Entity
 {
-  int32_t id;
+  EntityId id;
   bool operator==(const Entity&) const = default;
 };
 } // namespace s2h::ecs

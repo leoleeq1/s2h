@@ -22,7 +22,6 @@
 
 namespace s2h::ecs
 {
-using EntityId = int32_t;
 using ComponentId = std::type_index;
 using ArchetypeId = std::size_t;
 using Row = std::size_t;
