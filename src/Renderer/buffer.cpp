@@ -24,17 +24,17 @@ s2h::mat4 ConstantBuffer::GetProjectionMatrix() const noexcept
   return projectionMatrix_;
 }
 
-void ConstantBuffer::SetModelMatrix(s2h::mat4 matrix) noexcept
+void ConstantBuffer::SetModelMatrix(const s2h::mat4& matrix) noexcept
 {
   modelMatrix_ = matrix;
 }
 
-void ConstantBuffer::SetViewMatrix(s2h::mat4 matrix) noexcept
+void ConstantBuffer::SetViewMatrix(const s2h::mat4& matrix) noexcept
 {
   viewMatrix_ = matrix;
 }
 
-void ConstantBuffer::SetProjectionMatrix(s2h::mat4 matrix) noexcept
+void ConstantBuffer::SetProjectionMatrix(const s2h::mat4& matrix) noexcept
 {
   projectionMatrix_ = matrix;
 }

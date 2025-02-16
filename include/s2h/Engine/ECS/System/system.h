@@ -15,30 +15,31 @@ class ISystem
  public:
   virtual ~ISystem() = default;
   virtual void Execute(
-    std::unordered_map<std::type_index, void *>& components) = 0;
+    float dt, std::unordered_map<std::type_index, void *>& components) = 0;
 };
 
 template<typename... Components> class TypedSystem : public ISystem
 {
-  using Func = std::function<void(Components&...)>;
+  using Func = std::function<void(float, Components&...)>;
 
  public:
   virtual ~TypedSystem() = default;
 
   void Each(Func func) { func_ = func; }
 
-  void Execute(std::unordered_map<std::type_index, void *>& components) override
+  void Execute(
+    float dt, std::unordered_map<std::type_index, void *>& components) override
   {
-    auto tuple = GetComponentsTuple(components);
+    auto tuple = GetComponentsTuple(dt, components);
     std::apply(func_, tuple);
   }
 
  private:
-  std::tuple<Components...> GetComponentsTuple(
-    std::unordered_map<std::type_index, void *>& components)
+  std::tuple<float, Components&...> GetComponentsTuple(
+    float dt, std::unordered_map<std::type_index, void *>& components)
   {
-    return std::tuple<Components...>(
-      *reinterpret_cast<Components *>(components[typeid(Components)])...);
+    return std::tuple<float, Components&...>(
+      dt, *reinterpret_cast<Components *>(components[typeid(Components)])...);
   }
 
   Func func_;

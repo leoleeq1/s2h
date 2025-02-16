@@ -65,7 +65,7 @@ constexpr std::size_t Texture::CalculateBufferSize(TextureDesc desc) noexcept
       std::unreachable();
   }
   return static_cast<std::size_t>(
-    (((desc.width * bitCount + 15) >> 4U) << 1U) * desc.height);
+    (((desc.width * bitCount + 31) >> 5U) << 2U) * desc.height);
 }
 } // namespace s2h
 

@@ -12,7 +12,7 @@ namespace s2h
 class Component
 {
  public:
-  ~Component() = default;
+  virtual ~Component() = default;
 
   [[nodiscard]] GameObject& GetGameObject() noexcept;
 

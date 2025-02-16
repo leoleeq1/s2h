@@ -21,9 +21,9 @@ class ConstantBuffer
   s2h::mat4 GetViewMatrix() const noexcept;
   s2h::mat4 GetProjectionMatrix() const noexcept;
 
-  void SetModelMatrix(s2h::mat4 matrix) noexcept;
-  void SetViewMatrix(s2h::mat4 matrix) noexcept;
-  void SetProjectionMatrix(s2h::mat4 matrix) noexcept;
+  void SetModelMatrix(const s2h::mat4& matrix) noexcept;
+  void SetViewMatrix(const s2h::mat4& matrix) noexcept;
+  void SetProjectionMatrix(const s2h::mat4& matrix) noexcept;
 
  private:
   s2h::mat4 modelMatrix_;

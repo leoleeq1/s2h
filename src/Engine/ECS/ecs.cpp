@@ -54,18 +54,13 @@ ecs::Entity ECS::Entity()
   return e;
 }
 
-void ECS::Update()
+void ECS::Update(float dt)
 {
-  std::vector<ecs::Archetype *> types;
   for (auto& [comps, systems] : systemIndex_)
   {
-    for (auto arche : componentIndex_[comps[0]])
-    {
-      if (arche->Contains(comps))
-      {
-        types.push_back(arche);
-      }
-    }
+    auto types =
+      componentIndex_[comps[0]]
+      | std::views::filter([&](auto *arche) { return arche->Contains(comps); });
 
     for (auto& system : systems)
     {
@@ -81,48 +76,12 @@ void ECS::Update()
               arche->components[arche->map[t]].elements.data()
               + arche->components[arche->map[t]].elementSize * record.row;
           }
-          system->Execute(components);
+          system->Execute(dt, components);
         }
       }
     }
-
-    types.clear();
   }
 }
-
-// std::vector<ecs::Archetype *> ECS::Query(
-//   std::span<ecs::ComponentId> components, ecs::QueryMode mode)
-// {
-//   assert(components.size() > 0);
-//   switch (mode)
-//   {
-//     case ecs::QueryMode::Exact:
-//     {
-//       ecs::ArchetypeId id = GetArchetypeId(components);
-//       return std::vector<ecs::Archetype *>{&archetypeIndex_[id]};
-//     }
-//     case ecs::QueryMode::Contains:
-//     {
-//       std::vector<ecs::Archetype *> result;
-//       std::vector<ecs::ComponentId> intersected(components.size());
-//       for (auto archetype : componentIndex_[components[0]])
-//       {
-//         std::set_intersection(components.begin(), components.end(),
-//           archetype->type.begin(), archetype->type.end(),
-//           std::back_inserter(intersected));
-
-//         if (intersected.size() == components.size())
-//         {
-//           result.push_back(archetype);
-//         }
-//         intersected.clear();
-//       }
-//       return result;
-//     }
-//     default:
-//       std::unreachable();
-//   }
-// }
 
 void ECS::Reset()
 {

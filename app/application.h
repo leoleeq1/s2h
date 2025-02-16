@@ -14,14 +14,15 @@ class RendererBase;
 class Application
 {
  public:
-  Application(nw::Surface surface, std::unique_ptr<s2h::RendererBase> renderer);
+  Application(
+    nw::Surface *surface, std::unique_ptr<s2h::RendererBase> renderer);
   ~Application() = default;
   Application(const Application&) = delete;
   Application& operator=(const Application&) = delete;
   Application(Application&&) = delete;
   Application& operator=(Application&&) = delete;
 
-  void OnWindowSizeChanged(const nw::Surface& surface);
+  void OnWindowSizeChanged();
 
   void Initialize();
 
@@ -37,7 +38,7 @@ class Application
   s2h::ecs::ECS ecs_;
   s2h::ResourceManager resourceManager_;
   s2h::Scene scene_;
-  nw::Surface surface_;
+  nw::Surface *surface_;
   std::unique_ptr<s2h::RendererBase> renderer_;
 };
 } // namespace s2h

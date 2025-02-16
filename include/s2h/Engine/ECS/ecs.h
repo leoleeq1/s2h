@@ -13,6 +13,7 @@
 #include <functional>
 #include <iterator>
 #include <memory>
+#include <ranges>
 #include <span>
 #include <typeindex>
 #include <unordered_map>
@@ -21,15 +22,12 @@
 
 namespace s2h::ecs
 {
-namespace
-{
 using EntityId = int32_t;
 using ComponentId = std::type_index;
 using ArchetypeId = std::size_t;
 using Row = std::size_t;
 using Column = std::size_t;
 using Type = std::vector<ComponentId>;
-} // namespace
 
 struct TypeHasher
 {
@@ -74,7 +72,7 @@ struct Archetype
     return components[map[typeid(T)]];
   }
 
-  bool Contains(const Type& types)
+  template<std::ranges::range T> bool Contains(const T& types)
   {
     for (auto& t : types)
     {
@@ -118,10 +116,9 @@ class ECS
   template<typename T> void RemoveComponent(ecs::Entity entity);
   template<typename T> T *GetComponent(ecs::Entity entity);
 
-  void Update();
+  void Update(float dt);
   template<typename... Args> void Execute(std::function<void(Args *...)> func);
 
-  template<typename T> s2h::JoinedSpan<T> Query();
   template<typename T, typename... Args>
   std::vector<std::tuple<T *, Args *...>> Query();
 
@@ -248,17 +245,13 @@ template<typename T> T *ECS::GetComponent(ecs::Entity entity)
 template<typename... Args>
 void ECS::Execute(std::function<void(Args *...)> func)
 {
-  std::vector<ComponentId> components = {typeid(Args)...};
-  std::vector<Archetype *> types;
-  for (auto arche : componentIndex_[components[0]])
-  {
-    if (arche->Contains(components))
-    {
-      types.push_back(arche);
-    }
-  }
+  std::array<ComponentId, sizeof...(Args)> components = {typeid(Args)...};
+  std::ranges::filter_view types =
+    componentIndex_[components[0]] | std::views::filter([&](auto *arche) {
+      return arche->Contains(components);
+    });
 
-  for (auto& arche : types)
+  for (s2h::ecs::Archetype *arche : types)
   {
     for (std::size_t i = 0; i < arche->entities.size(); ++i)
     {
@@ -274,36 +267,18 @@ void ECS::Execute(std::function<void(Args *...)> func)
   }
 }
 
-template<typename T> s2h::JoinedSpan<T> ECS::Query()
-{
-  s2h::JoinedSpan<T> span;
-
-  for (auto archetypes : componentIndex_[typeid(T)])
-  {
-    ComponentData& component = archetypes->GetData<T>();
-    T *ptr = reinterpret_cast<T *>(component.elements);
-    span.Join(std::span<T>(ptr, component.size));
-  }
-
-  return span;
-}
-
 template<typename T, typename... Args>
 std::vector<std::tuple<T *, Args *...>> ECS::Query()
 {
   std::vector<std::tuple<T *, Args *...>> values;
 
   std::vector<ComponentId> components = {typeid(T), typeid(Args)...};
-  std::vector<Archetype *> types;
-  for (auto arche : componentIndex_[components[0]])
-  {
-    if (arche->Contains(components))
-    {
-      types.push_back(arche);
-    }
-  }
+  std::ranges::filter_view types =
+    componentIndex_[typeid(T)]
+    | std::views::filter(
+      [&](s2h::ecs::Archetype *arche) { return arche->Contains(components); });
 
-  for (auto& arche : types)
+  for (s2h::ecs::Archetype *arche : types)
   {
     for (std::size_t i = 0; i < arche->entities.size(); ++i)
     {

@@ -3,6 +3,7 @@
 #include "nw/surface.h"
 #include "s2h/Engine/ECS/Component/mesh_renderer.h"
 #include "s2h/Engine/ECS/System/render.h"
+#include "s2h/Engine/ECS/ecs.h"
 #include "s2h/Engine/OOP/Component/camera.h"
 #include "s2h/Engine/OOP/Component/mesh_renderer.h"
 #include "s2h/Engine/OOP/Component/transform.h"
@@ -22,23 +23,22 @@
 namespace s2h
 {
 Application::Application(
-  nw::Surface surface, std::unique_ptr<s2h::RendererBase> renderer)
+  nw::Surface *surface, std::unique_ptr<s2h::RendererBase> renderer)
   : surface_{surface},
     renderer_{std::move(renderer)}
 {
-  OnWindowSizeChanged(surface);
+  OnWindowSizeChanged();
 }
 
-void Application::OnWindowSizeChanged(const nw::Surface& surface)
+void Application::OnWindowSizeChanged()
 {
   std::array descriptors = {
     TextureDesc{.format = TextureFormat::A8R8G8B8,
-                .width = surface.width,
-                .height = surface.height},
+                .width = surface_->width,
+                .height = surface_->height},
   };
 
   renderer_->Initialize(descriptors);
-  surface_ = surface;
 }
 
 void Application::Initialize()
@@ -78,6 +78,9 @@ void Application::Initialize()
     camEntity, s2h::v3f(0.0f, 0.0f, -50.0f));
   ecs_.AddComponent<s2h::ecs::RotationComponent>(camEntity);
   ecs_.AddComponent<s2h::ecs::CameraComponent>(camEntity);
+
+  ecs_.System<s2h::ecs::MeshRendererComponent, s2h::ecs::RotationComponent>()
+    .Each([](float dt, auto& mr, auto& rot) { rot.rotation.v[1] += 60 * dt; });
 }
 
 void Application::FixedUpdateLoop(float dt, Application *app)
@@ -102,44 +105,39 @@ void Application::Update(float dt)
   // //   cube->GetTransform().Position += s2h::v3f::Basis(0) * dt;
   // cube->GetTransform().LocalRotation += s2h::v3f::Basis(1) * 180 * dt;
   // camGo->GetTransform().LocalRotation += s2h::v3f(0, dt, 0.0f);
-  ecs_.Update();
+  ecs_.Update(dt);
 }
 
 void Application::LateUpdate(float dt) {}
 
 void Application::Render()
 {
-  std::span<uint8_t> clearColor(
-    reinterpret_cast<uint8_t *>(&nw::Color::white), sizeof(nw::Color));
-
   ecs_.Execute<s2h::ecs::CameraComponent, s2h::ecs::PositionComponent,
-    s2h::ecs::RotationComponent>(
-    [&](s2h::ecs::CameraComponent *cam, s2h::ecs::PositionComponent *pos,
-      s2h::ecs::RotationComponent *rot) {
-      s2h::ConstantBuffer cb;
-      renderer_->Clear(cam->renderTarget, clearColor);
+    s2h::ecs::RotationComponent>([&](auto *cam, auto *pos, auto *rot) {
+    s2h::ConstantBuffer cb;
+    renderer_->Clear(cam->renderTarget, nw::Color::white);
 
-      cb.SetViewMatrix(
-        s2h::ecs::RenderSystem::GetViewMatrix(pos->position, rot->rotation));
-      cb.SetProjectionMatrix(s2h::ecs::RenderSystem::GetProjectionMatrix(
-        *cam, renderer_->GetRenderTexture(cam->renderTarget)));
+    cb.SetViewMatrix(
+      s2h::ecs::RenderSystem::GetViewMatrix(pos->position, rot->rotation));
+    cb.SetProjectionMatrix(s2h::ecs::RenderSystem::GetProjectionMatrix(
+      *cam, renderer_->GetRenderTexture(cam->renderTarget)));
 
-      auto meshRenderers =
-        this->ecs_
-          .Query<s2h::ecs::MeshRendererComponent, s2h::ecs::PositionComponent,
-            s2h::ecs::RotationComponent, s2h::ecs::ScaleComponent>();
-      for (std::size_t i = 0; i < meshRenderers.size(); ++i)
-      {
-        auto& mr = meshRenderers[i];
-        auto mesh = std::get<s2h::ecs::MeshRendererComponent *>(mr)->mesh;
-        cb.SetModelMatrix(s2h::ecs::TransformSystem::GetModelMatrix(
-          std::get<s2h::ecs::PositionComponent *>(mr)->position,
-          std::get<s2h::ecs::RotationComponent *>(mr)->rotation,
-          std::get<s2h::ecs::ScaleComponent *>(mr)->scale));
-        renderer_->DrawIndexed(
-          cam->renderTarget, cb, mesh->GetVB(), mesh->GetIB());
-      }
-    });
+    auto meshRenderers =
+      this->ecs_
+        .Query<s2h::ecs::MeshRendererComponent, s2h::ecs::PositionComponent,
+          s2h::ecs::RotationComponent, s2h::ecs::ScaleComponent>();
+    for (std::size_t i = 0; i < meshRenderers.size(); ++i)
+    {
+      auto& mr = meshRenderers[i];
+      auto mesh = std::get<s2h::ecs::MeshRendererComponent *>(mr)->mesh;
+      cb.SetModelMatrix(s2h::ecs::TransformSystem::GetModelMatrix(
+        std::get<s2h::ecs::PositionComponent *>(mr)->position,
+        std::get<s2h::ecs::RotationComponent *>(mr)->rotation,
+        std::get<s2h::ecs::ScaleComponent *>(mr)->scale));
+      renderer_->DrawIndexed(
+        cam->renderTarget, cb, mesh->GetVB(), mesh->GetIB());
+    }
+  });
 
   // auto cameras = scene_.FindComponents<s2h::Camera>();
   // auto meshRenderers = scene_.FindComponents<s2h::MeshRenderer>();
@@ -164,6 +162,6 @@ void Application::Render()
   // }
 
   renderer_->Submit(
-    s2h::RenderTarget{0}, reinterpret_cast<uint8_t *>(surface_.pixels));
+    s2h::RenderTarget{0}, reinterpret_cast<uint8_t *>(surface_->pixels.data()));
 }
 } // namespace s2h

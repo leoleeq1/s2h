@@ -1,6 +1,7 @@
 #ifndef S2H_RENDERER_H_
 #define S2H_RENDERER_H_
 
+#include "nw/color.h"
 #include "s2h/Renderer/buffer.h"
 #include "s2h/Renderer/misc.h"
 #include "s2h/Resource/texture.h"
@@ -22,7 +23,8 @@ class RendererBase
   RenderTarget AddRenderTexture(Texture&& texture);
   s2h::Texture& GetRenderTexture(RenderTarget target);
 
-  virtual void Clear(s2h::RenderTarget target, std::span<uint8_t> color);
+  void Clear(s2h::RenderTarget target, nw::Color color);
+  void Clear(s2h::RenderTarget target, std::span<uint8_t> color);
   virtual void DrawIndexed(s2h::RenderTarget target,
     const s2h::ConstantBuffer& cb, const s2h::VertexBuffer& vb,
     const s2h::IndexBuffer& ib) = 0;

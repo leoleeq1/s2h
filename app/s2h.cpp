@@ -31,26 +31,21 @@ int main()
     .mode = nw::WindowMode::Windowed,
   };
 
-  window.Create(windowDesc, &eventBus);
+  nw::Surface surface{windowDesc.size};
+  window.Create(windowDesc, &eventBus, &surface);
 
   s2h::RendererBuilder builder{};
   builder.Set(s2h::RendererKind::SoftwareRasterizer);
 
-  s2h::Application app{window.GetSurface(), builder.Build()};
+  s2h::Application app{&surface, builder.Build()};
   app.Initialize();
 
   eventBus.Subscribe(std::make_unique<nw::EventHandler<nw::WindowResizeEvent>>(
-    [&window, &app](nw::WindowResizeEvent& e) {
-      nw::Surface surface = window.CreateSurface(e.GetSize());
-      app.OnWindowSizeChanged(surface);
+    [&app, &surface](nw::WindowResizeEvent& e) {
+      surface.Resize(e.GetSize());
+      app.OnWindowSizeChanged();
       return true;
     }));
-
-  // s2h::ECS ecs;
-  // s2h::Entity e = ecs.Entity();
-  // ecs.AddComponent(e, s2h::ecs::ComponentId{1});
-  // ecs.AddComponent(e, s2h::ecs::ComponentId{2});
-  // ecs.AddComponent(e, s2h::ecs::ComponentId{3});
 
   s2h::Timer timer;
 
@@ -60,6 +55,7 @@ int main()
     timer.Tick(
       &s2h::Application::FixedUpdateLoop, &s2h::Application::UpdateLoop, &app);
     window.Present();
+    std::println("{}ms", timer.GetElapsedMilliSeconds());
   }
 
   return 0;
