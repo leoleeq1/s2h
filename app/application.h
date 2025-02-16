@@ -2,7 +2,6 @@
 #define S2H_APPLICATION_H_
 
 #include "nw/surface.h"
-#include "s2h/Engine/ECS/ecs.h"
 #include "s2h/Engine/OOP/scene.h"
 #include "s2h/Engine/resource_manager.h"
 
@@ -35,7 +34,6 @@ class Application
   void LateUpdate(float dt);
   void Render();
 
-  s2h::ecs::ECS ecs_;
   s2h::ResourceManager resourceManager_;
   s2h::Scene scene_;
   nw::Surface *surface_;

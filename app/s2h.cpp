@@ -12,9 +12,6 @@
 #include "s2h/Renderer/vertex.h"
 #include "s2h/timer.h"
 
-#include "s2h/Engine/ECS/ecs.h"
-#include "s2h/Engine/ECS/entity.h"
-
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
