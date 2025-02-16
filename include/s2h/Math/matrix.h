@@ -81,6 +81,73 @@ struct mat
   std::array<s2h::vec<T, N>, N> m;
 };
 
+template<typename T>
+  requires std::is_floating_point_v<T>
+struct alignas(alignof(T) * 4) mat<T, 4>
+{
+  constexpr mat() : m{} {}
+  constexpr mat(const mat& m) : m{m.m} {}
+  constexpr explicit mat(std::span<T, 4 * 4> s)
+  {
+    for (std::size_t r = 0; r < 4; ++r)
+    {
+      for (std::size_t c = 0; c < 4; ++c)
+      {
+        m[r][c] = s[r * 4 + c];
+      }
+    }
+  }
+
+  constexpr explicit mat(std::span<s2h::vec<T, 4>, 4> sv)
+  {
+    for (std::size_t r = 0; r < 4; ++r)
+    {
+      for (std::size_t c = 0; c < 4; ++c)
+      {
+        m[r][c] = sv[r][c];
+      }
+    }
+  }
+
+  constexpr explicit mat(std::initializer_list<s2h::vec<T, 4>> list)
+  {
+    assert(list.size() == 4);
+    for (std::size_t r = 0; r < 4; ++r)
+    {
+      m[r] = list.begin()[r];
+    }
+  }
+
+  template<Arithmetic U> constexpr explicit mat(std::initializer_list<U> list)
+  {
+    assert(list.size() == (4 * 4));
+    for (std::size_t r = 0; r < 4; ++r)
+    {
+      for (std::size_t c = 0; c < 4; ++c)
+      {
+        m[r][c] = static_cast<T>(list.begin()[r * 4 + c]);
+      }
+    }
+  }
+
+  static consteval mat Identity() noexcept
+  {
+    mat m{};
+    for (std::size_t r = 0; r < 4; ++r)
+    {
+      for (std::size_t c = 0; c < 4; ++c)
+      {
+        m[r][c] = (r == c) ? static_cast<T>(1) : static_cast<T>(0);
+      }
+    }
+    return m;
+  }
+
+  s2h::vec<T, 4>& operator[](std::size_t row) { return m[row]; }
+
+  std::array<s2h::vec<T, 4>, 4> m;
+};
+
 template<typename T, std::size_t Row, std::size_t Col> struct mat_nm
 {
   constexpr mat_nm() : m{} {}
